@@ -10,32 +10,67 @@ public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         options(input);
+        input.close();
+    }
+    public static void options(Scanner input) {
+        while (true) {
+            System.out.printf("1. Add Grades %n2. Check Grades%n3. Check Grade Averages%n4. Exit%n");
+            if (input.hasNextInt()) {
+                int choice = input.nextInt();
+                input.nextLine();
+                switch (choice) {
+                    case 1 -> storeStudentGrades(input);
+                    case 2 -> checkGrades(input);
+                    case 3 -> gradeAverages(input);
+                    case 4 -> {
+                        System.exit(0);
+                    }
+                    default -> System.out.println("Invalid input. Please select 1-4.");
+                }
+            } else {
+                input.nextLine();
+                System.out.println("Invalid Input");
+            }
+        }
     }
     public static void storeStudentGrades(Scanner input) {
-        String name;
-        int grade;
         while (true) {
+            String name = "";
+
             System.out.println("What is the student's name?");
             name = input.nextLine().trim();
             if (!name.isEmpty()) {
-                name = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
+                name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
             }
-            System.out.printf("What is %s's grade? %n", name);
-                if (input.hasNextInt()) {
-                    grade = input.nextInt();
-                    input.nextLine();
-                    System.out.printf("%s has a %d%% in the class.%n", name, grade);
-                    STUDENT_GRADES.put(name, grade);
-                } else {
-                    String garbage = input.nextLine();
-                    System.out.println(garbage + " is not a number. Try again.");
-                    continue;
-                }
+
+            int grade = intGradeValidator(input, name);
+
+            STUDENT_GRADES.put(name, grade); //Stores Name and Grade score to hashmap
 
             System.out.println("Would you like to add another grade?");
             if (!input.nextLine().trim().equalsIgnoreCase("yes")) {
                 return;
             }
+        }
+    }
+    public static int intGradeValidator(Scanner input, String name) {
+        while (true) {
+            System.out.printf("What is %s's grade? %n", name);
+
+            if (!input.hasNextInt()) {
+                System.out.println("Please enter a valid number.");
+                continue;
+            }
+
+            int grade = input.nextInt();
+            input.nextLine();
+
+
+            if (grade < 0 || grade > 100) {
+                System.out.println("Please enter a valid number 0-100.");
+                continue;
+            }
+            return grade;
         }
     }
     public static void checkGrades(Scanner input) {
@@ -45,9 +80,9 @@ public class Main {
             System.out.println("No name entered.");
             return;
         }
-        name = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
-        if (!name.isEmpty() && STUDENT_GRADES.containsKey(name)){
-            System.out.printf("%s has a %d%%%n",name, STUDENT_GRADES.get(name));
+        name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+        if (!name.isEmpty() && STUDENT_GRADES.containsKey(name)) {
+            System.out.printf("%s has a %d%%%n", name, STUDENT_GRADES.get(name));
         } else {
             System.out.printf("Student %s not found.%n", name);
         }
@@ -65,25 +100,6 @@ public class Main {
 
         double average = (double) sum / STUDENT_GRADES.size();
 
-        System.out.printf("The class average grade is a %.2f/100%n", average);
-    }
-    public static void options(Scanner input) {
-        while (true) {
-            System.out.printf("1. Add Grades %n2. Check Grades%n3. Check Grade Averages%n4. Exit%n");
-            if (input.hasNextInt()) {
-                int choice = input.nextInt();
-                input.nextLine();
-                switch (choice) {
-                    case 1 -> storeStudentGrades(input);
-                    case 2 -> checkGrades(input);
-                    case 3 -> gradeAverages(input);
-                    case 4 -> {System.exit(0);}
-                    default -> System.out.println("Invalid input. Please select 1-4.");
-                }
-            } else {
-                input.nextLine();
-                System.out.println("Invalid Input");
-            }
-        }
+        System.out.printf("The class average grade is a %.2f%n", average);
     }
 }
